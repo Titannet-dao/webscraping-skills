@@ -59,7 +59,7 @@ Infer the subject and which of the four questions is being asked. Ask only:
 
 ## Collect
 
-Read [titan-tools.md](../../references/titan-tools.md) first for the caps.
+Read [titan-tools.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/titan-tools.md) first for the caps.
 
 **Start with SEC filings when the subject is US.** EDGAR is free and unauthenticated.
 Discover the current entry points rather than assuming them: `titan_search` with
@@ -81,7 +81,7 @@ when it adds detail.
 Use `freshness=month` or `week` when the question is who is active *now*. Remember Baidu,
 Yandex and Naver drop `freshness` — if the market is China, Russia, or Korea, filter by
 date after fetching instead. See
-[regional-search.md](../../references/regional-search.md).
+[regional-search.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/regional-search.md).
 
 **Then what the firms publish themselves.** A first-class source, not a nice-to-have: this
 is where a fund says what it is doing before anyone reports it — new fund announcements,
