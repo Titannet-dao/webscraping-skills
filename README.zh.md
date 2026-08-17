@@ -48,51 +48,43 @@ Titan 运行在 [Titan Network](https://titannet.io) 自有的住宅网络基础
 
 ## 安装
 
-### Claude Code
+一条命令，无论你用哪个 AI 助手：
 
-以插件形式发布，通过本仓库自带的 marketplace 安装：
+```bash
+npx skills add titannet-dao/webscraping-skills
+```
+
+它会写入 `.agents/skills/`——Codex、Cursor、Gemini CLI、Antigravity 以及十几个客户端都读取
+这个目录——并同时为 Claude Code 建立软链接。加 `-g` 可以装到全局而不是当前项目。
+
+只装其中一个技能：
+
+```bash
+npx skills add titannet-dao/webscraping-skills --skill titan-competitive-intel
+```
+
+只想看看里面都有什么、暂不安装：
+
+```bash
+npx skills add titannet-dao/webscraping-skills -l
+```
+
+之后用 `npx skills update` 拉取更新，用 `npx skills remove` 卸载。该 CLI 来自
+[vercel-labs/skills](https://github.com/vercel-labs/skills)。
+
+要和团队共享，就把安装好的文件夹提交到**他们仓库**的 `.agents/skills/` 里——这样它随项目
+一起流转，并像其他文件一样走代码评审。
+
+### Claude Code 插件
+
+本仓库同时也是一个 Claude Code 插件 marketplace，如果你更习惯这样管理：
 
 ```
 /plugin marketplace add titannet-dao/webscraping-skills
 /plugin install titan-webscraping-skills@titan-webscraping
 ```
 
-或在终端里：
-
-```bash
-claude plugin marketplace add titannet-dao/webscraping-skills
-claude plugin install titan-webscraping-skills@titan-webscraping
-```
-
-`main` 分支的每次提交都会作为更新推送——运行 `/plugin marketplace update` 拉取。
-
-### Codex、Cursor、Gemini CLI、Antigravity 及其他
-
-把你需要的技能文件夹复制到对应客户端扫描的目录：
-
-| 客户端 | 项目级 | 全局 |
-| --- | --- | --- |
-| Codex | `.agents/skills/` | `~/.agents/skills/` |
-| Cursor | `.agents/skills/`（或 `.cursor/skills/`） | `~/.agents/skills/`（或 `~/.cursor/skills/`） |
-| Antigravity | `.agents/skills/` | `~/.gemini/config/skills/` |
-| Gemini CLI | `.agents/skills/` | — |
-
-`.agents/skills/` 是它们共同读取的路径，放这一份即可覆盖表中所有客户端。
-
-```bash
-git clone https://github.com/titannet-dao/webscraping-skills.git
-cd webscraping-skills
-cp -R skills/titan-competitive-intel ~/.agents/skills/
-```
-
-**记得把 `references/` 一起带上。** 每个技能都会按需加载
-[references/titan-tools.md](references/titan-tools.md)（真实的工具上限）和
-[references/regional-search.md](references/regional-search.md)（各搜索引擎的支持矩阵）。
-最稳妥的做法是复制整个仓库，或者把 `skills/` 和 `references/` 一起复制——缺了它们技能仍
-能运行，但会失去那些防止它向服务器提出过量请求的事实依据。
-
-要和团队共享，就把技能提交到**他们仓库**的 `.agents/skills/` 里——这样它随项目一起流转，
-并像其他文件一样走代码评审。
+`npx skills add` 已经覆盖了 Claude Code，所以这只是另一种选择，不是额外的步骤。
 
 ## 这些技能不会做的事
 

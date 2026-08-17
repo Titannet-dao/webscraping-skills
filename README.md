@@ -15,7 +15,8 @@ English-language internet describes it.
 Each skill is a plain [Agent Skill](https://agentskills.io/specification) — a folder with a
 `SKILL.md` — so the same folder works in Claude Code, Codex, Cursor, Gemini CLI,
 Antigravity, and the [other clients](https://agentskills.io/clients) that adopted the
-format. There is no per-harness variant to keep in sync.
+format. There is no per-harness variant to keep in sync, and one install command covers
+all of them.
 
 ## What you get
 
@@ -48,53 +49,45 @@ Full setup instructions per client: [MCP quickstart](https://webscraping.titanne
 
 ## Install
 
-### Claude Code
+One command, whichever agent you use:
 
-Ships as a plugin, via this repo's own marketplace:
+```bash
+npx skills add titannet-dao/webscraping-skills
+```
+
+It writes to `.agents/skills/`, which Codex, Cursor, Gemini CLI, Antigravity and a dozen
+more read, and symlinks the Claude Code directory as well. Add `-g` for a global install
+rather than the current project.
+
+Just one skill:
+
+```bash
+npx skills add titannet-dao/webscraping-skills --skill titan-competitive-intel
+```
+
+And to see what is in here without installing anything:
+
+```bash
+npx skills add titannet-dao/webscraping-skills -l
+```
+
+Later, `npx skills update` pulls changes and `npx skills remove` takes them out again. The
+CLI is [vercel-labs/skills](https://github.com/vercel-labs/skills).
+
+To share these with a team, commit the installed folders to `.agents/skills/` in *their*
+repo — they then travel with the project and go through code review like any other file.
+
+### Claude Code plugin
+
+The repo is also a Claude Code plugin marketplace, if you would rather manage it that way:
 
 ```
 /plugin marketplace add titannet-dao/webscraping-skills
 /plugin install titan-webscraping-skills@titan-webscraping
 ```
 
-Or from a shell:
-
-```bash
-claude plugin marketplace add titannet-dao/webscraping-skills
-claude plugin install titan-webscraping-skills@titan-webscraping
-```
-
-Updates arrive with every commit to `main` — run `/plugin marketplace update` to pull them.
-
-### Codex, Cursor, Gemini CLI, Antigravity, and others
-
-Copy the skill folders you want into the directory your harness scans:
-
-| Harness | Project-level | Global |
-| --- | --- | --- |
-| Codex | `.agents/skills/` | `~/.agents/skills/` |
-| Cursor | `.agents/skills/` (or `.cursor/skills/`) | `~/.agents/skills/` (or `~/.cursor/skills/`) |
-| Antigravity | `.agents/skills/` | `~/.gemini/config/skills/` |
-| Gemini CLI | `.agents/skills/` | — |
-
-`.agents/skills/` is the path they all read, so one copy there covers every harness in the
-table.
-
-```bash
-git clone https://github.com/titannet-dao/webscraping-skills.git
-cd webscraping-skills
-cp -R skills/titan-competitive-intel ~/.agents/skills/
-```
-
-**Take `references/` with them.** Every skill loads
-[references/titan-tools.md](references/titan-tools.md) for the real tool caps and
-[references/regional-search.md](references/regional-search.md) for the provider matrix.
-Copying the whole repo, or all of `skills/` plus `references/`, is the safe move — a skill
-installed without them still runs, but loses the facts that keep it from over-asking the
-server.
-
-To share these with a team, commit them to `.agents/skills/` in *their* repo instead — they
-then travel with the project and go through code review like any other file.
+`npx skills add` already covers Claude Code, so this is an alternative rather than a
+second step.
 
 ## What these skills will not do
 
