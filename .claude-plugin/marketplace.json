@@ -1,0 +1,16 @@
+{
+  "name": "titan-webscraping",
+  "description": "Titan Web Scraping skills, distributed as a single Claude Code plugin.",
+  "owner": {
+    "name": "TitanNet DAO",
+    "url": "https://titannet.io"
+  },
+  "plugins": [
+    {
+      "name": "titan-webscraping-skills",
+      "source": "./",
+      "description": "Outcome-focused skills that turn the Titan Web Scraping MCP server into finished deliverables.",
+      "category": "research"
+    }
+  ]
+}

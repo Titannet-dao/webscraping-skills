@@ -1,0 +1,4 @@
+interface:
+  display_name: "Titan SEO Audit"
+  short_description: "Site audit with a prioritised fix list"
+  brand_color: "#1447E6"

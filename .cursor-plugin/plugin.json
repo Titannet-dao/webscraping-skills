@@ -1,0 +1,23 @@
+{
+  "name": "titan-webscraping-skills",
+  "displayName": "Titan Web Scraping Skills",
+  "description": "Outcome-focused skills that turn the Titan Web Scraping MCP server into finished deliverables: research reports, SEO audits, competitor trackers, investor and lead briefs, market landscapes, and audience research.",
+  "skills": "./skills/",
+  "author": {
+    "name": "TitanNet DAO",
+    "url": "https://titannet.io"
+  },
+  "homepage": "https://webscraping.titannet.io",
+  "repository": "https://github.com/titannet-dao/webscraping-skills",
+  "license": "MIT",
+  "keywords": [
+    "titan",
+    "web-scraping",
+    "mcp",
+    "research",
+    "seo",
+    "competitive-intelligence",
+    "lead-research",
+    "market-research"
+  ]
+}

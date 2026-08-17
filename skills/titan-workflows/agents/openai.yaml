@@ -1,0 +1,4 @@
+interface:
+  display_name: "Titan Workflows"
+  short_description: "Pick and run the right Titan web-data workflow"
+  brand_color: "#1447E6"
