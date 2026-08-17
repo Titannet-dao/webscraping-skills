@@ -52,6 +52,16 @@ Those two files are derived from the MCP service's own source — `internal/boun
 changes a cap, a default, or a provider's behaviour, update them there and nowhere else.
 Do not edit them from memory.
 
+**Skills link to them by absolute URL, never by relative path.** `npx skills add` installs
+a skill as a lone folder under `.agents/skills/<name>/` and does **not** carry `references/`
+with it — verified against the live repo — so `../../references/titan-tools.md` resolves in
+this checkout and is a dead link in every install. The absolute
+`https://github.com/titannet-dao/webscraping-skills/blob/main/references/…` form works in
+both places.
+
+Sibling *skill* links stay relative (`../titan-seo-audit/SKILL.md`). Installed skills are
+siblings under `.agents/skills/`, so those do resolve.
+
 ## Adding a skill
 
 Read [references/skill-authoring.md](references/skill-authoring.md) — it holds the
@@ -67,11 +77,12 @@ authoring rules. The mechanical steps:
 4. Add a line to [skills/README.md](skills/README.md), to the skill lists in
    [README.md](README.md) and [README.zh.md](README.zh.md), and to the catalogue behind
    the `/skills` page in the `titan-webscraping` frontend.
-5. Validate, then re-link:
+5. Validate, then check what an installer actually sees:
    ```bash
-   npx skills-ref validate ./skills/<skill-name>   # frontmatter + naming rules
-   claude plugin validate .                        # the .claude-plugin manifests
-   scripts/link-skills.sh                          # (re)link into every harness
+   npx skills-ref validate ./skills/<skill-name>              # frontmatter + naming rules
+   claude plugin validate .                                   # the .claude-plugin manifests
+   npx skills add titannet-dao/webscraping-skills -l          # what the CLI lists
+   scripts/link-skills.sh                                     # (re)link into every harness
    ```
    One expected complaint: `claude plugin validate` warns that no `version` is set. That
    is intentional — see [Versioning](#versioning). Don't pass `--strict`, which promotes
@@ -94,7 +105,7 @@ Keep `SKILL.md` under ~200 lines. It loads in full the moment the skill activate
 anything long, optional, or reference-shaped belongs in `references/` and is pulled in
 only when needed.
 
-Reference bundled files by relative path (`../../references/titan-tools.md`). Depend on
+Link the shared references by absolute URL, per the rule above. Depend on
 another skill by naming it in prose, not by reaching into its folder, so each skill stays
 installable on its own.
 

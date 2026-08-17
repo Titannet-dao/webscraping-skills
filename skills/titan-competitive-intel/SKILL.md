@@ -33,7 +33,7 @@ Ask only:
 
 ## Collect
 
-Read [titan-tools.md](../../references/titan-tools.md) first for the caps.
+Read [titan-tools.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/titan-tools.md) first for the caps.
 
 **Find the pages, per competitor.** `titan_crawl` with `mode=map` on each competitor's
 domain, then pick out what matters — pricing, plans, features, product pages, changelog,
@@ -68,7 +68,7 @@ Expect this and handle it rather than reporting a number you are unsure of:
   as free, and not as an estimate.
 - Prices differ by visitor country. When that matters, fetch through
   `titan_run_template` with `proxy_locations` — see
-  [regional-search.md](../../references/regional-search.md) — and label each price with
+  [regional-search.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/regional-search.md) — and label each price with
   the location it was read from.
 - Toggles (monthly/annual, currency, seat count) usually mean one state is in the markup
   and the other is not. Say which one you captured.

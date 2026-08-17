@@ -32,7 +32,7 @@ Pick everything else yourself and name it in one line.
 
 ## Collect
 
-Read [titan-tools.md](../../references/titan-tools.md) first for the caps and defaults.
+Read [titan-tools.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/titan-tools.md) first for the caps and defaults.
 
 **Decompose before searching.** Turn the question into distinct angles, and query each one
 in its own words rather than re-running one phrasing:
@@ -53,7 +53,7 @@ so treat them as a shortlist, not evidence.
 - `file_types: ["pdf"]` for filings, standards, and research — often the only place the
   real numbers are. Dropped on Yahoo, Yandex and Naver.
 - When the topic is regional, run the same angle through the market's own provider as
-  well. See [regional-search.md](../../references/regional-search.md).
+  well. See [regional-search.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/regional-search.md).
 
 **Read.** `titan_fetch` the shortlisted URLs, batched — up to 100 per call, so one call
 usually covers a whole angle. Set `only_main_content=true` and raise

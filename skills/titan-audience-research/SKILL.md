@@ -51,7 +51,7 @@ Infer the subject and whether it is a brand, a category, or a competitor set. As
 
 ## Collect
 
-Read [titan-tools.md](../../references/titan-tools.md) first for the caps.
+Read [titan-tools.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/titan-tools.md) first for the caps.
 
 **Search where the conversation is.** `titan_search` with `include_domains` pointed at one
 community at a time — `["reddit.com"]`, `["news.ycombinator.com"]`,
@@ -69,7 +69,7 @@ filter by thread date after fetching.
 **For non-English markets**, search that market's platforms through that market's provider
 and in its language — `baidu` for Chinese-language Q&A and forums, `naver` for Korean
 community content, `yandex` for Russian. See
-[regional-search.md](../../references/regional-search.md).
+[regional-search.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/regional-search.md).
 
 **Read the threads.** `titan_fetch`, batched up to 100 URLs per call.
 

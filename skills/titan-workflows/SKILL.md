@@ -62,12 +62,12 @@ Name your defaults in one line instead of asking about them.
    `titan_crawl`, `titan_get_run`. If they are absent, the user has not connected their
    client — point them at <https://webscraping.titannet.io/overview> and stop. Do not
    substitute another web tool and present it as a Titan run.
-2. **Read [titan-tools.md](../../references/titan-tools.md)** for the real caps,
+2. **Read [titan-tools.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/titan-tools.md)** for the real caps,
    defaults, and the things Titan cannot do. Plan around them rather than discovering
    them mid-run.
 3. **Discover.** `titan_search` for URLs, or `titan_crawl` with `mode=map` when the
    question is about one site. Pick the provider by market — see
-   [regional-search.md](../../references/regional-search.md).
+   [regional-search.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/regional-search.md).
 4. **Read.** `titan_fetch` in batches of up to 100 URLs. Use `freshness=live_only` for
    anything that changes, like prices.
 5. **Extract.** Titan returns markdown, not records. Parsing it into the fields the

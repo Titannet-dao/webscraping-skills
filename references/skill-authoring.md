@@ -88,10 +88,11 @@ the skill.
 4. Add a line to [../skills/README.md](../skills/README.md), the skill list in
    [../README.md](../README.md) and [../README.zh.md](../README.zh.md), and the
    catalogue on the `/skills` page in the `titan-webscraping` frontend.
-5. Validate and link:
+5. Validate, then check what an installer actually sees:
    ```bash
    npx skills-ref validate ./skills/<name>
    claude plugin validate .
+   npx skills add titannet-dao/webscraping-skills -l
    scripts/link-skills.sh
    ```
    `claude plugin validate` warning about a missing `version` is expected — see

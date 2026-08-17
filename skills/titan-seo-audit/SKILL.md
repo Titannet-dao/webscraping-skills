@@ -30,7 +30,7 @@ Ask only:
 
 ## Collect
 
-Read [titan-tools.md](../../references/titan-tools.md) first for the caps.
+Read [titan-tools.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/titan-tools.md) first for the caps.
 
 **Map the site.** `titan_crawl` with `mode=map` on the domain. This returns a URL
 inventory with no page content, which is exactly what you want first: the shape of the
@@ -66,7 +66,7 @@ audit's most actionable section.
 Set `country` and `language` to the market being ranked in. Rankings are local, and an
 audit run from the wrong locale describes a SERP the user's customers never see. Note the
 per-provider support table in
-[regional-search.md](../../references/regional-search.md) — and if the site targets
+[regional-search.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/regional-search.md) — and if the site targets
 China, Russia, or Korea, audit against Baidu, Yandex, or Naver rather than Google.
 
 ### What Titan can and cannot see

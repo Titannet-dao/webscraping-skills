@@ -32,8 +32,8 @@ Default to a global view with the user's own market called out, and say so.
 
 ## Collect
 
-Read [titan-tools.md](../../references/titan-tools.md) and
-[regional-search.md](../../references/regional-search.md) before planning. The second one
+Read [titan-tools.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/titan-tools.md) and
+[regional-search.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/regional-search.md) before planning. The second one
 decides the shape of this workflow.
 
 **Search from inside each market.** One provider per market, chosen by where the market's
@@ -67,7 +67,7 @@ page links to the whole membership.
 market is often only visible from inside it: localized pricing, a country selector, a
 redirect, a "not available in your region" page. Fetch the same URL through
 `titan_run_template` with `proxy_locations` for the markets in question — the recipe is in
-[regional-search.md](../../references/regional-search.md) — and label each observation
+[regional-search.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/regional-search.md) — and label each observation
 with the location it was read from.
 
 Use this where the answer turns on it, not as a sweep of every country.

@@ -27,7 +27,7 @@ If you have a company name or domain, start. Ask only:
 
 ## Collect
 
-Read [titan-tools.md](../../references/titan-tools.md) first for the caps.
+Read [titan-tools.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/titan-tools.md) first for the caps.
 
 **Their own site is the primary source.** `titan_crawl` with `mode=map` on the domain to
 find the pages worth reading, then `titan_fetch`:
