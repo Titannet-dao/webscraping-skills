@@ -1,6 +1,6 @@
 ---
 name: titan-deep-research
-description: Produce a cited research report on a topic from open-web evidence gathered through Titan, written to a file with every claim attached to its source. Use when the user asks to research a topic, wants a report or briefing on a market, technology, regulation, or industry question, asks "what's the state of X", or needs a synthesis no single search can answer. Not for a quick lookup, a product recommendation, or a company brief — use titan-lead-research for one company and titan-market-landscape for who is in a category.
+description: Produce cited research report on a topic from open-web evidence gathered through Titan, written to file with every claim attached to source. Use when user asks to research a market, technology, regulation, or industry question, asks "what's state of X", or needs synthesis no single search can answer. Not for quick lookup, recommendation, or company brief — use titan-lead-research for one company.
 license: MIT
 metadata:
   author: titannet-dao
@@ -43,7 +43,8 @@ in its own words rather than re-running one phrasing:
 - who disagrees, and what the strongest counter-argument is
 - what changed recently
 
-**Search.** `titan_search` per angle. Results are metadata only — title, URL, snippet —
+**Search.** `titan_search` per angle with `search_provider: "bing"` and `max_results: 10`.
+Results are metadata only — title, URL, snippet —
 so treat them as a shortlist, not evidence.
 
 - `freshness=month` or `week` when recency is the point. Note that Baidu, Yandex and
@@ -55,8 +56,9 @@ so treat them as a shortlist, not evidence.
 - When the topic is regional, run the same angle through the market's own provider as
   well. See [regional-search.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/regional-search.md).
 
-**Read.** `titan_fetch` the shortlisted URLs, batched — up to 100 per call, so one call
-usually covers a whole angle. Set `only_main_content=true` and raise
+**Read.** `titan_fetch` shortlisted URLs in 5–10 URL batches. Apply `titan_get_run` after
+every call returning `run_id`; never re-issue rate-limited request carrying `run_id`. Set
+`only_main_content=true` and raise
 `max_chars_per_url` above the 12,000 default for long PDFs and filings, or you will
 silently read a fraction of the document and cite it as if you read all of it.
 
@@ -64,16 +66,14 @@ silently read a fraction of the document and cite it as if you read all of it.
 else, fetch that instead and cite the original. `include_links=true` on the first fetch
 makes this cheap.
 
-**Keep going until the picture stops changing.** Stop when new sources repeat what you
-have, the disagreements are mapped, and the numbers are corroborated — not at a page
-count. If the evidence stays thin, that is a finding: report it.
+**Keep going until picture stops changing, within budget.** Default ceiling: 35 credits.
+Stop when sources repeat, disagreements are mapped, numbers are corroborated, or ceiling
+ends. Thin evidence is a finding: report it.
 
-## Parallel work
+## Pace work
 
-Independent angles are independent runs. If sub-agents are available, give each one an
-angle, the queries, and a fixed return shape: claim, source URL, source quality, how
-confident. One writer then synthesises — parallel agents gather evidence, they do not
-each write a section.
+Use one active Titan call per API key. Parallel research shares quota; collect and analyse
+angles sequentially.
 
 ## Analyse
 
@@ -85,6 +85,8 @@ each write a section.
 - **Date everything.** A 2019 market figure presented undated reads as current.
 - **Separate what you found from what you infer.** Both belong in the report; conflating
   them is what makes research untrustworthy.
+- **Check relevance and validity before fetch.** Result title must fit query intent. Reject
+  blocked, empty, JS-shell, soft-404, or very short page content.
 
 ## Deliverable
 
@@ -121,11 +123,12 @@ workflow: titan-deep-research
 topic: <topic>
 providers: <providers used>
 region: <country or global>
+urls_read: <exact URL list>
+content_settings: <per-batch only_main_content values>
 output: research-<topic>.md
 ```
 
-Report roughly what the run consumed and point at
-<https://webscraping.titannet.io/usage>.
+Report records delivered, blocked records, and credit ceiling used.
 
 Write the report in the user's language. Source titles and quotes stay in their original
 language, with the URL intact.

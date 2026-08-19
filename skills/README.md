@@ -19,14 +19,8 @@ ask for one by name.
 - **[titan-competitive-intel](./titan-competitive-intel/SKILL.md)** — competitor pricing,
   features, positioning and releases, built to be re-run and diffed. →
   `competitors-<category>.md`
-- **[titan-investor-research](./titan-investor-research/SKILL.md)** — funding rounds, funds
-  actively deploying, portfolios, and the shared-investor graph, from SEC filings and
-  announcements. → `investors-<subject>.md`, `funding.csv`
 - **[titan-lead-research](./titan-lead-research/SKILL.md)** — a one-page brief on a company
   or person before a meeting. → `brief-<company>.md`
-- **[titan-market-landscape](./titan-market-landscape/SKILL.md)** — who is in a category
-  and how it changes by country. Uses Titan's regional search engines hardest. →
-  `landscape-<category>.md`
 - **[titan-audience-research](./titan-audience-research/SKILL.md)** — what people publicly
   say, from communities and review sites, and the words they use. →
   `audience-<subject>.md`

@@ -22,16 +22,18 @@ page.
 
 Be straight about this at the start of the run, not at the end.
 
-**Reachable**: Reddit threads and subreddits, Hacker News, Stack Overflow and Stack
-Exchange, product-specific forums and community boards, GitHub issues and discussions,
-review sites — G2, Trustpilot, Capterra, TrustRadius, App Store and Play Store listing
-pages — YouTube video pages and their descriptions, blog comment sections, Q&A sites, and
-in Chinese-language markets Zhihu, Baidu Tieba and similar, found through `baidu`.
+**Best sources**: `old.reddit.com` threads and subreddit search, product forums, Hacker
+News, blog comments, YouTube descriptions, and public community boards. `old.reddit.com`
+is server-rendered and returns full comment trees. Use
+`old.reddit.com/r/<sub>/search?q=<query>&restrict_sr=on` when search is unavailable.
 
-**Not reachable**: LinkedIn, X/Twitter, Instagram, TikTok, Facebook, private Discord and
-Slack communities, gated forums. Titan has no authenticated sessions and no browser
-automation, so these return login walls. Do not fetch a login wall and characterise it as
-thin discussion.
+**Usually blocked or unusable**: G2, Capterra, TrustRadius, Trustpilot, Stack Overflow,
+Stack Exchange, AlternativeTo, Apple App Store, and GitHub issues/discussions. Probe each
+one URL alone; do not spend a batch on it. Google Play may show a small, paginated sample.
+
+**Not audience conversation sources**: LinkedIn and X can return public page content, but
+not reliable discussion corpus. Instagram, TikTok, Facebook, private Discord/Slack, gated
+forums, and login-only pages remain out of scope.
 
 If the user specifically wants those platforms, say once that it needs their official APIs
 and is outside what Titan does, then deliver what the open web has. Do not attempt
@@ -53,7 +55,8 @@ Infer the subject and whether it is a brand, a category, or a competitor set. As
 
 Read [titan-tools.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/titan-tools.md) first for the caps.
 
-**Search where the conversation is.** `titan_search` with `include_domains` pointed at one
+**Search where the conversation is.** `titan_search` with `search_provider: "bing"`,
+`max_results: 10`, and `include_domains` pointed at one
 community at a time — `["reddit.com"]`, `["news.ycombinator.com"]`,
 `["g2.com"]` — is far more precise than an open query, because a bare search returns
 marketing pages about the subject rather than discussion of it.
@@ -71,7 +74,8 @@ and in its language — `baidu` for Chinese-language Q&A and forums, `naver` for
 community content, `yandex` for Russian. See
 [regional-search.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/regional-search.md).
 
-**Read the threads.** `titan_fetch`, batched up to 100 URLs per call.
+**Read threads.** `titan_fetch`, batches of 5–10 URLs. Apply `titan_get_run` after every
+call returning `run_id`; on rate limit with `run_id`, poll it and never re-issue request.
 
 - `only_main_content=false` on discussion pages. The replies are frequently outside the
   main content block, and the replies are the research — a thread read as its opening post
@@ -80,9 +84,9 @@ community content, `yandex` for Russian. See
   truncation biases you toward whatever the top comments said.
 - `include_links=true` picks up threads linking to other threads.
 
-**Follow to saturation, not to a count.** Keep going while new threads add new themes.
-Stop when they repeat. If a subject has almost no discussion, that is the finding —
-report it as low volume rather than padding with tangential threads.
+**Follow to saturation within budget.** Default ceiling: 30 credits. Keep going while new
+threads add themes; stop when themes repeat or budget ends. If discussion is sparse, report
+low volume rather than padding with tangential threads.
 
 ## Analyse
 
@@ -111,6 +115,9 @@ recent they are.
 
 ## Summary
 The themes that repeat, and how strongly supported each is.
+
+## Assumptions
+Subject, use case, market, and any defaults inferred because user was unavailable.
 
 ## Themes
 Per theme: what it is, how many sources mention it, date range, two or three
@@ -141,12 +148,13 @@ out of reach, and how confident the themes are given that.
 workflow: titan-audience-research
 subject: <brand or category>
 sources: <domains searched>
+urls_read: <exact URL list>
+content_settings: <per-batch only_main_content values>
 markets: <countries and languages>
 output: audience-<subject>.md
 ```
 
-Report roughly what the run consumed and point at
-<https://webscraping.titannet.io/usage>.
+Report records delivered, blocked records, and credit ceiling used.
 
 ## Quality bar
 

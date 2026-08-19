@@ -1,6 +1,6 @@
 ---
 name: titan-competitive-intel
-description: Track what competitors charge, ship, and claim, through Titan, and write it to a file built to be re-run and diffed. Use when the user asks for a competitor analysis or competitive analysis, wants to compare pricing, plans, or features against rivals, wants to monitor a competitor's changelog, releases, or positioning, asks "what changed since last time", or wants a recurring competitor watch. For who else exists in a category, use titan-market-landscape first.
+description: Track what competitors charge, ship, and claim, through Titan, and write it to a file built to be re-run and diffed. Use when user asks for competitor analysis, wants to compare pricing, plans, features, releases, or positioning, asks "what changed since last time", or needs recurring competitor watch.
 license: MIT
 metadata:
   author: titannet-dao
@@ -35,26 +35,29 @@ Ask only:
 
 Read [titan-tools.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/titan-tools.md) first for the caps.
 
-**Find the pages, per competitor.** `titan_crawl` with `mode=map` on each competitor's
+**Find pages, per competitor.** `titan_crawl` with `mode=map` on each competitor's
 domain, then pick out what matters — pricing, plans, features, product pages, changelog,
 release notes, docs, about, customers. `include_patterns` narrows a large site fast.
-Crawl is one origin at a time and **asynchronous by default**, so each competitor is its
-own run collected with `titan_get_run`.
+Crawl is one origin at a time. It can return a `run_id`; collect each such run with
+`titan_get_run`.
 
-For a small competitor set, `titan_search` with `include_domains: ["competitor.com"]` and
+For a small competitor set, `titan_search` with `search_provider: "bing"`,
+`max_results: 10`, `include_domains: ["competitor.com"]`, and
 terms like pricing or changelog is quicker than a full map.
 
 **Read them live.** `titan_fetch` with **`freshness=live_only`**. This is the whole point
 of the workflow: a cached price is not a price, and a monitoring report built on cache
 reports last month's state as today's.
 
-- Batch across competitors — up to 100 URLs per call, so one call usually covers the
-  whole set.
+- Batch 5–10 URLs. Apply `titan_get_run` after every call returning `run_id`; never retry a
+  rate-limited call carrying `run_id`.
 - `only_main_content=true` for feature and marketing copy.
 - `only_main_content=false` for pricing pages. Plan comparison tables and footnotes
   frequently live outside the main content block, and the footnotes are where the real
   limits are.
 - Raise `max_chars_per_url` past 12,000 for long changelogs and feature matrices.
+- `only_main_content=false` for changelogs and release notes. Main-content mode can hide
+  dated entries.
 
 **Record what you read, when.** Every extracted fact gets its source URL and the date it
 was fetched. This is what makes the next run a diff.
@@ -74,14 +77,11 @@ Expect this and handle it rather than reporting a number you are unsure of:
   and the other is not. Say which one you captured.
 - "Contact us" is a finding, not a gap. It says something about who they sell to.
 
-## Parallel work
+## Pace work
 
-One competitor per sub-agent, if available. Give each the domain, the page types to find,
-and a fixed return shape: plans with prices and limits, features present or absent,
-positioning claims, recent releases, every fact with URL and fetch date.
-
-Merge centrally. Comparison only works if one writer normalises the vocabulary — two
-vendors calling different things "unlimited" is a finding you can only see side by side.
+Use one active Titan call per API key. Parallel agents share quota and trigger account-wide
+rate limits. Default credit ceiling: 40. Stop discovery when each competitor has usable
+pricing, product, and release evidence, or ceiling ends.
 
 ## Analyse
 
@@ -127,13 +127,14 @@ regional variation not checked, pages behind a login.
 ## Rerun inputs
 workflow: titan-competitive-intel
 competitors: <domains>
+urls_read: <exact URL list>
+content_settings: <per-batch only_main_content values>
 axes: <pricing, features, positioning, releases>
 freshness: live_only
 output: competitors-<category>.md
 ```
 
-Report roughly what the run consumed and point at
-<https://webscraping.titannet.io/usage>.
+Report records delivered, blocked records, and credit ceiling used.
 
 Suggest a re-run cadence that matches what moves — pricing quarterly, changelogs monthly.
 
@@ -144,4 +145,4 @@ Suggest a re-run cadence that matches what moves — pricing quarterly, changelo
 - "Not stated on their site" and "they do not have it" are different findings. Never
   collapse them.
 - No inferred prices. Missing is missing.
-- Read `warnings` on every call.
+- Apply shared safe-call protocol: inspect status, code, run ID, applied settings, and warnings.

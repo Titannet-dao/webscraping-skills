@@ -1,131 +1,100 @@
 # Titan tools
 
-The contract every skill in this repo depends on. Read this before deciding how to
-collect evidence; the caps and defaults below are what the server actually enforces,
-not guidance.
+Use this measured operating contract before any Titan run. It reflects live runs on
+2026-08-18. Server responses win if they differ.
 
-Values here are taken from the MCP service's own bounds and handlers. If a number here
-disagrees with what the server tells you in `warnings`, the server is right — say so in
-the deliverable rather than retrying blind.
+## Connection and cost
 
-## Connection
+Titan MCP: `https://mcp.webscraping.titannet.io/mcp`. If Titan tools are unavailable,
+ask user to connect an API key at <https://webscraping.titannet.io/overview>. Do not
+substitute another scraper and call it Titan run.
 
-MCP server: `https://mcp.webscraping.titannet.io/mcp`, authenticated with a Titan API
-key as a bearer token. If the tools below are not available in the session, the user has
-not connected their client yet — send them to <https://webscraping.titannet.io/overview>
-for the key and the per-client setup snippet, and stop. Do not fall back to a generic web
-fetch and present the result as a Titan run.
+Plan before calling: search costs 1 credit per run, fetch about 1 per URL delivered, and
+crawl about 1 per page returned. Template run costs like equivalent tool; each proxy
+location is separate run. These are planning units, not exact account balance.
 
-Consumption is metered in credits. The free plan grants 3,000 per month.
+Set credit ceiling before collection. `credits_estimated` is pending work, not spend;
+async results may expose no credit total. Report URLs/pages delivered and ceiling used,
+not guessed final charge.
 
-## The three capabilities
+## Safe call protocol
 
-Titan does three things. Everything in this repo is built out of them.
+All work may be synchronous **or** asynchronous, depending on backend load. After every
+`titan_search`, `titan_fetch`, `titan_crawl`, or `titan_run_template` call:
 
-### `titan_search` — find URLs
+1. If response has `status: running` or `queued` and `run_id`, poll `titan_get_run`.
+2. If results arrive directly, use `pages` for synchronous fetch responses; use `results`
+   for data returned by `titan_get_run`.
+3. On `provider_rate_limited`, inspect `run_id`. If present, poll it — work may be live and
+   billable. Never re-issue identical request.
+4. If no live run exists, wait minutes, not seconds, before one retry. Limits are shared per
+   account; provider rotation and parallel agents do not create more capacity.
+5. Read `code`, `retryable`, `run_id`, `status`, `status_reason`, and `warnings`. `warnings`
+   can be empty or absent when call fails.
 
-Returns **metadata only**: title, URL, snippet. No page content. Always follow it with
-`titan_fetch` for the pages you actually want to read.
+`titan_get_run` is free. Use `titan_list_templates` as free health check: available while
+other work may be rate-limited.
 
-| input | default | notes |
-| --- | --- | --- |
-| `query` | required | |
-| `max_results` | 10 | cap 100 |
-| `search_provider` | `google` | one of `google` `bing` `yahoo` `brave` `duckduckgo` `baidu` `yandex` `naver`. No auto-fallback — if a provider fails, choose another explicitly |
-| `country`, `language` | — | support varies by provider, see [regional-search.md](regional-search.md) |
-| `freshness` | — | `any` `day` `week` `month` `year`. Not the same vocabulary as fetch's `freshness` |
-| `include_domains`, `exclude_domains` | — | compiled to `site:` / `-site:`, supported everywhere |
-| `file_types`, `title_terms`, `url_terms` | — | compiled to `filetype:` / `intitle:` / `inurl:`; **dropped on yahoo, yandex, naver** |
-| `operator_mode` | `raw_and_structured` | `raw` sends the query untouched; `structured` sends only the compiled operators |
+## `titan_search` — find URLs
 
-Runs synchronously by default and returns results in the response.
+Returns titles, URLs, and snippets only. Fetch pages before treating them as evidence.
 
-### `titan_fetch` — read pages
+Always pass `search_provider`; no provider is safe as implicit default. For Western
+searches try `bing`, then `duckduckgo`, then `brave`, then `yahoo`; move down only after a
+real failure and shared-rate-limit wait. See [regional-search.md](regional-search.md) for
+regional providers.
 
-| input | default | notes |
-| --- | --- | --- |
-| `urls` | required | up to **100 per call**. Batch rather than looping one at a time |
-| `format` | `markdown` | or `text` |
-| `only_main_content` | — | strips nav, footers, and boilerplate |
-| `include_links`, `include_image_links` | — | needed when the next step depends on outbound links |
-| `max_chars_per_url` | 12,000 | cap 100,000. Raise it for long pages, or the tail is silently missing |
-| `freshness` | `cache_ok` | `cache_ok` \| `prefer_live` \| `live_only`. Use `live_only` when the value being read changes — prices, stock, changelogs |
+```text
+titan_search {
+  query: "<query in market language>",
+  search_provider: "bing",
+  max_results: 10,
+  freshness: "month" // only when recency matters
+}
+```
 
-Runs synchronously by default. URLs that fail come back in `failed[]` and **do not consume
-credits** — a partial result is normal, not an error to retry wholesale.
+`max_results` defaults to 10 and caps at 100. `country`, `language`, and refinements vary
+by provider; verify applied settings in response fields and `warnings`.
 
-Unsafe URLs (private IPs, localhost, non-http schemes) are rejected.
+## `titan_fetch` — read pages
 
-### `titan_crawl` — walk a site
+Start with batches of **5–10 URLs**, never 100. Batch delivery is all-or-nothing: one slow
+URL can hold every result. Probe unknown or often-blocked domains separately.
 
-Same-origin only. Two modes:
+Useful inputs: `format: markdown`, `only_main_content`, `include_links`,
+`max_chars_per_url` (default 12,000; cap 100,000), and `freshness` (`cache_ok`,
+`prefer_live`, `live_only`). Use `only_main_content=false` for pricing, changelogs, release
+notes, and discussion pages.
 
-- `mode=map` (default) — URL inventory, no page content. This is how you learn a site's
-  shape before choosing what to read.
-- `mode=crawl` — pages with content extracted.
+Validate each record before using it. Reject a `403`/`429`/`503`, empty body, soft-404
+redirect, JS shell, or content under roughly 1,000 characters. For short page expected to
+contain real content, retry once with `only_main_content=false`. `failed[]` is not billing
+or validity signal; blocked records can be returned and billed normally.
+
+## `titan_crawl` — map one site
+
+`mode=map` inventories URLs; `mode=crawl` extracts content. Same-origin only. It may return
+`run_id`, so apply safe call protocol.
 
 | input | default | cap |
 | --- | --- | --- |
 | `max_pages` | 25 | 500 |
 | `max_depth` | 1 | 5 |
 | `content_max_chars` | 8,000 | 100,000 |
-| `include_patterns`, `exclude_patterns` | — | scope the walk instead of raising `max_pages` |
-| `respect_robots_txt` | — | |
 
-**Asynchronous by default** — it returns a `run_id`, not results. Collect them with
-`titan_get_run`. `wait_for_completion=true` works only for short runs; the synchronous
-wait is capped at 30 seconds.
+`max_pages` binds before `max_depth`: depth does nothing if page budget ends at shallower
+level. Set both to fit credit ceiling; scope with include/exclude patterns first.
 
-Values above a cap are accepted, clamped, and the applied value is reported in
-`warnings`.
+## Templates and regional runs
 
-### `titan_get_run` — collect an async run
+Call `titan_list_templates` before `titan_run_template`; slugs vary by deployment. Search
+templates require pre-built provider SERP URL in `urls`, not query. They accept `payload`
+such as `max_results` and `include_ads`; use `proxy_locations` for geographic search or
+fetch. They add location, not rate-limit capacity.
 
-`run_id` from a previous call, plus `limit` (default 100, max 1,000) and `offset` to
-page through results. Poll it after any call that returned `status=running` or
-`status=queued`.
+## Limits
 
-## Always read `warnings`
-
-Every response carries a `warnings` array, and it is the only place the server tells you
-it did something other than what you asked: an operator dropped because the provider does
-not support it, a `max_pages` clamped to the cap, a locale ignored. A skill that ignores
-`warnings` will report a filtered result that was never filtered.
-
-When a warning changes what the evidence covers, say so in the deliverable.
-
-## What Titan does not do
-
-Design around these rather than discovering them mid-run.
-
-- **No structured extraction.** There is no schema parameter and no JSON records
-  capability. Titan returns clean markdown; turning it into a table, a CSV, or typed
-  fields is your job as the agent. Never promise the user a shape Titan does not return.
-- **No authenticated sessions and no browser actions.** No logging in, no clicking, no
-  form filling. Anything behind a login wall is out of reach: LinkedIn, X, Instagram,
-  TikTok, internal dashboards, paywalled databases such as Crunchbase and PitchBook.
-  When a user asks for one of those, say what is unreachable and offer the open-web
-  equivalent instead of returning a page of login HTML as if it were data.
-- **No cross-origin crawl.** `titan_crawl` stays on one origin. A multi-domain sweep is
-  several crawls, or search plus fetch.
-- **No paper index.** Academic work goes through ordinary search against publisher and
-  preprint sites.
-
-## Templates
-
-`titan_list_templates` and `titan_run_template` exist, and the templates behind them are
-the same implementations that `titan_search`, `titan_fetch`, and `titan_crawl` already
-use. Prefer the three named tools.
-
-The one thing `titan_run_template` adds is `proxy_locations` — see
-[regional-search.md](regional-search.md).
-
-Template slugs are configurable per deployment. **Never hardcode a slug**: call
-`titan_list_templates` and use what it returns.
-
-## Report what the run cost
-
-Search, fetch, crawl, and template responses carry a `usage` object. When a workflow
-finishes, tell the user roughly what it consumed and where to see the detail
-(<https://webscraping.titannet.io/usage>). Someone on 3,000 free credits a month should
-never have to discover the cost of a run afterwards.
+Titan has no authenticated sessions, browser interaction, JS rendering, structured output,
+or cross-origin crawling. It returns markdown; agent extracts tables and fields. Do not
+claim access to content behind login, only client-rendered content, or HTML metadata Titan
+does not return.

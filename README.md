@@ -25,9 +25,7 @@ all of them.
 | **[titan-deep-research](skills/titan-deep-research/SKILL.md)** | a report on a topic no single search answers | `research-<topic>.md` — findings, counter-evidence, every claim sourced |
 | **[titan-seo-audit](skills/titan-seo-audit/SKILL.md)** | an SEO audit of a site | `seo-audit-<domain>.md` — issues by page, the exact fix, in priority order |
 | **[titan-competitive-intel](skills/titan-competitive-intel/SKILL.md)** | what competitors charge and ship | `competitors-<category>.md` — pricing and feature matrix, diffed on every re-run |
-| **[titan-investor-research](skills/titan-investor-research/SKILL.md)** | funding rounds, active funds, co-investors | `investors-<subject>.md` + `funding.csv` — from SEC filings and announcements |
 | **[titan-lead-research](skills/titan-lead-research/SKILL.md)** | background before a call | `brief-<company>.md` — one page, with the specific things worth mentioning |
-| **[titan-market-landscape](skills/titan-market-landscape/SKILL.md)** | who is in a category, per country | `landscape-<category>.md` — player table plus per-market findings |
 | **[titan-audience-research](skills/titan-audience-research/SKILL.md)** | what people say about a brand or category | `audience-<subject>.md` — themes, counts, verbatim quotes, and their words vs. yours |
 
 **[titan-workflows](skills/titan-workflows/SKILL.md)** is the router. If you don't know

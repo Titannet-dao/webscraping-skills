@@ -1,80 +1,40 @@
 # Regional search
 
-Titan runs on Titan Network's own residential infrastructure — 900,000+ IPs across 120+
-countries — and exposes eight search providers rather than one. That combination is what
-lets a workflow answer questions a single-provider tool cannot: what a market looks like
-*from inside it*.
+Use provider and language matching market. Always name provider explicitly; apply
+[Titan safe call protocol](titan-tools.md#safe-call-protocol).
 
-Read this when the question has a country in it.
-
-## Pick the provider by market, not by habit
-
-Defaulting to Google hides whole markets. In China, Russia, Korea and Japan, Google is
-not where the market's own answers live.
-
-| market | provider | why |
+| market | provider order | note |
 | --- | --- | --- |
-| Global / Western | `google`, `bing`, `brave`, `duckduckgo` | broadest coverage |
-| China | `baidu` | dominant; surfaces Chinese-language sources Google never returns |
-| Russia / CIS | `yandex` | dominant; better Cyrillic coverage |
-| South Korea | `naver` | dominant; Korean portals, blogs, and community content |
-| Japan | `yahoo` | Yahoo! Japan holds share Google does not |
+| Global / Western | `bing`, `duckduckgo`, `brave`, `yahoo` | ranked by live reliability |
+| China | `baidu` | search Chinese; CN proxy when local SERP matters |
+| Russia / CIS | `yandex` | search Cyrillic; RU proxy when local SERP matters |
+| South Korea | `naver` | search Korean; KR proxy when local SERP matters |
+| Japan | `yahoo` | search Japanese; JP proxy when local SERP matters |
 
-Run the *same query in two providers* when the point is comparison. Two result sets from
-Google and Baidu for one product category is a finding in itself: different players,
-different pricing, different positioning.
+For comparison, preserve provider and location beside each finding. Never merge results from
+different markets as one undifferentiated list.
 
-Query in the market's language, not in English translated. A Baidu search in English
-returns the expatriate view of a Chinese market.
+## Provider limits
 
-## What each provider actually honours
+`country` and `language` work on Bing, Brave, and Yahoo. DuckDuckGo needs both together.
+Baidu, Yandex, and Naver drop them, along with freshness; filter date after fetching. Yahoo,
+Yandex, and Naver drop structured `file_types`, `title_terms`, and `url_terms`; place those
+constraints in query text. Confirm response fields and `warnings`.
 
-`titan_search` compiles your refinements into provider-specific query syntax. Providers
-that cannot express a refinement have it **dropped**, and the drop is reported in
-`warnings` — never assumed to have applied.
+## Local SERP or page view
 
-| provider | `include_domains` / `exclude_domains` | `file_types`, `title_terms`, `url_terms` | `country` | `language` | `freshness` |
-| --- | --- | --- | --- | --- | --- |
-| `google` | yes | yes | yes | yes | yes |
-| `bing` | yes | yes | yes | yes | yes |
-| `brave` | yes | yes | yes | yes | yes |
-| `duckduckgo` | yes | yes | **both required** | **both required** | yes |
-| `yahoo` | yes | **dropped** | yes | yes | yes |
-| `baidu` | yes | yes | **dropped** | **dropped** | **dropped** |
-| `yandex` | yes | **dropped** | **dropped** | **dropped** | **dropped** |
-| `naver` | yes (`site:` only) | **dropped** | **dropped** | **dropped** | **dropped** |
+Use `titan_run_template` only when question is what user sees **inside** market. Call
+`titan_list_templates` first; never hardcode slug. Search template requires provider SERP
+URL, e.g. Baidu:
 
-Consequences worth planning around:
+```text
+titan_run_template {
+  template_slug: "<slug returned by titan_list_templates>",
+  urls: ["https://www.baidu.com/s?wd=<url-encoded-query>"],
+  payload: { max_results: 10, include_ads: false },
+  proxy_locations: ["CN"]
+}
+```
 
-- DuckDuckGo encodes locale as one region code, so `country` and `language` must be
-  passed **together** or both are dropped.
-- Baidu, Yandex and Naver serve their own locale and offer no usable recency parameter.
-  To bound a Baidu result set by time, filter by date after fetching rather than asking
-  the provider.
-- On Yahoo, Yandex and Naver, `file_types` / `title_terms` / `url_terms` never apply.
-  Put the constraint in the query text instead, and expect looser results.
-
-## Fetching from a specific country
-
-`titan_fetch` has no country parameter. When a page's *content* varies by visitor
-location — localized pricing, regional catalogues, country-gated availability — the
-geography goes through `titan_run_template` with `proxy_locations`:
-
-1. Call `titan_list_templates` and take the generic page-extraction template's slug.
-   Never hardcode it; slugs are configurable per deployment.
-2. Call `titan_run_template` with that slug, the `urls`, and
-   `proxy_locations: ["US", "DE", "JP"]`.
-
-Fetch the same URL from two or three locations and compare. A price that differs, a
-product that disappears, or a redirect to a different domain is the answer to a question
-plain fetching cannot ask.
-
-Use it deliberately — one location per question, not a sweep of every country in the
-pool. Each location is a separate run and separate credits.
-
-## Saying it in the deliverable
-
-Regional evidence is only useful if the reader knows it is regional. Record which
-provider and which location produced each finding, and never merge a Baidu result set
-and a Google result set into one undifferentiated list — the difference between them is
-usually the insight.
+For localized pages use generic page-extraction template with `proxy_locations`. One
+location = one run and one charge. Templates share account-wide rate limits with named tools.

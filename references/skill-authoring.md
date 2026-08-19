@@ -36,15 +36,17 @@ So:
   credits.
 - **No invented sources.** Every claim in a deliverable carries the URL it came from.
 
-## Let the agent judge the depth
+## Let the agent judge evidence, bound cost
 
 Do not write depth tiers, page budgets, or query counts into a skill. How much evidence a
 question needs is not knowable in advance, and a number written here becomes either a
 ceiling on a hard question or a floor on an easy one. State what *good enough* looks like
 — coverage, corroboration, recency — and let the agent work until it gets there.
 
-The one number worth stating is a real server cap, and those live in
-[titan-tools.md](titan-tools.md).
+Add a **credit ceiling** beside the epistemic stopping rule. Collection is metered and an
+agent cannot reliably reconcile final spend. State a modest default budget, let user raise
+it, and tell report to list records delivered rather than guess charges. Server caps and
+call safety live in [titan-tools.md](titan-tools.md).
 
 ## Onboarding stays short
 
@@ -58,6 +60,10 @@ them in one line.
 Every deliverable is a file the user still has tomorrow: `research-<topic>.md`,
 `seo-audit.md`, `competitors.md`. Say the filename in the skill. Summarise in chat, but
 the artifact is the point.
+
+Use one slug rule: lowercase input, replace each run of non-alphanumeric characters with
+one hyphen, then trim edge hyphens. Example: `EU AI Act / GPAI` becomes
+`eu-ai-act-gpai`. Rerun inputs must record exact URLs and per-batch content settings.
 
 ## Stay portable
 

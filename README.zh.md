@@ -23,9 +23,7 @@ Titan 运行在 [Titan Network](https://titannet.io) 自有的住宅网络基础
 | **[titan-deep-research](skills/titan-deep-research/SKILL.md)** | 一次搜索答不出来的课题报告 | `research-<topic>.md`——结论、反面证据，每条主张都附来源 |
 | **[titan-seo-audit](skills/titan-seo-audit/SKILL.md)** | 网站 SEO 审计 | `seo-audit-<domain>.md`——按页面列出问题、给出确切改法，并排好优先级 |
 | **[titan-competitive-intel](skills/titan-competitive-intel/SKILL.md)** | 竞品的定价与新功能 | `competitors-<category>.md`——定价与功能对照表，每次重跑自动对比变化 |
-| **[titan-investor-research](skills/titan-investor-research/SKILL.md)** | 融资轮次、活跃基金、共同投资方 | `investors-<subject>.md` + `funding.csv`——来自 SEC 备案与官方公告 |
 | **[titan-lead-research](skills/titan-lead-research/SKILL.md)** | 开会前的背景资料 | `brief-<company>.md`——一页纸，含值得在会上提起的具体细节 |
-| **[titan-market-landscape](skills/titan-market-landscape/SKILL.md)** | 一个品类里都有谁，各国有何不同 | `landscape-<category>.md`——玩家清单加分市场发现 |
 | **[titan-audience-research](skills/titan-audience-research/SKILL.md)** | 用户公开是怎么评价的 | `audience-<subject>.md`——主题、出现次数、原文引用，以及"用户的说法 vs 你的说法" |
 
 **[titan-workflows](skills/titan-workflows/SKILL.md)** 是入口路由。不确定该用哪个，就问

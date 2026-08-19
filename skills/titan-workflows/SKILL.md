@@ -1,6 +1,6 @@
 ---
 name: titan-workflows
-description: Pick and run the right Titan web-data workflow, and produce it as a finished file. Use when the user wants a deliverable built from web data through Titan — a research report, SEO audit, competitor tracker, investor or funding brief, pre-meeting company brief, market landscape, or audience research — or when they ask what Titan can do for them, or describe a web-research job with no obvious skill attached. Also use when a workflow needs data from a specific country or from Baidu, Yandex, Naver, or another regional search engine.
+description: Pick and run right Titan web-data workflow, then produce finished file. Use when user wants research report, SEO audit, competitor tracker, pre-meeting company brief, audience research, or web-data job with no obvious workflow. Also use when job needs regional search engine or country-specific view.
 license: MIT
 metadata:
   author: titannet-dao
@@ -25,20 +25,14 @@ is for the jobs that end in a document.
   and how it compares to whoever outranks it.
 - **[titan-competitive-intel](../titan-competitive-intel/SKILL.md)** — what competitors
   charge, ship, and claim. Built to be re-run on a schedule and diffed.
-- **[titan-investor-research](../titan-investor-research/SKILL.md)** — funding rounds,
-  which funds are actively deploying, portfolios, and the shared-investor graph between
-  companies.
 - **[titan-lead-research](../titan-lead-research/SKILL.md)** — a brief on one company or
   person before a meeting or an outreach message.
-- **[titan-market-landscape](../titan-market-landscape/SKILL.md)** — who is in a
-  category, how it is segmented, and how it differs by region. The workflow that uses
-  Titan's regional search engines hardest.
 - **[titan-audience-research](../titan-audience-research/SKILL.md)** — what people
   publicly say about a category or brand, from communities and review sites.
 
-Several of these compose. A market entry question is usually
-`titan-market-landscape` for the shape, then `titan-competitive-intel` on the players
-that matter. Run them in that order rather than merging them into one sprawling pass.
+For a market map or investor question, use `titan-deep-research` with a modest credit
+ceiling. These workflows are intentionally not standalone skills until they complete a
+reliable live run.
 
 If none fits, use the process below and tell the user at the end that this could become a
 new skill.
@@ -65,27 +59,27 @@ Name your defaults in one line instead of asking about them.
 2. **Read [titan-tools.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/titan-tools.md)** for the real caps,
    defaults, and the things Titan cannot do. Plan around them rather than discovering
    them mid-run.
-3. **Discover.** `titan_search` for URLs, or `titan_crawl` with `mode=map` when the
+3. **Discover.** `titan_search` with explicit `search_provider: "bing"` for URLs, or
+   `titan_crawl` with `mode=map` when the
    question is about one site. Pick the provider by market — see
    [regional-search.md](https://github.com/titannet-dao/webscraping-skills/blob/main/references/regional-search.md).
-4. **Read.** `titan_fetch` in batches of up to 100 URLs. Use `freshness=live_only` for
+4. **Collect.** Every call can return `run_id`; poll it with `titan_get_run`. On
+   `provider_rate_limited` with run ID, poll and never re-issue. Without run ID, wait
+   minutes before retrying once.
+5. **Read.** `titan_fetch` in batches of 5–10 URLs. Validate status, final URL, and content
+   length before use. Use `freshness=live_only` for
    anything that changes, like prices.
-5. **Extract.** Titan returns markdown, not records. Parsing it into the fields the
+6. **Extract.** Titan returns markdown, not records. Parsing it into the fields the
    deliverable needs is your job.
-6. **Write a file.** Not a chat message. Keep every claim attached to the URL it came
+7. **Write a file.** Not a chat message. Keep every claim attached to URL it came
    from.
-7. **Close out.** Report roughly what the run consumed, and give the rerun inputs so the
+8. **Close out.** Report records delivered, blocked records, credit ceiling, and rerun inputs.
    user or a scheduler can repeat it.
 
-## Work in parallel where the units are independent
+## Pace work
 
-Use sub-agents or an equivalent parallel runner when the work splits cleanly: one
-competitor each, one research angle each, one region each, one page each. Hand over the
-unit, the URLs or queries, the fields to extract, and the output shape — nothing
-harness-specific.
-
-Synthesis stays sequential and central. Parallel researchers gather; one writer decides
-what it means.
+Use one active Titan call per API key. Parallel agents share account quota and trigger
+rate limits; research and collection stay sequential.
 
 ## Deliverable standards
 
@@ -93,8 +87,8 @@ Whatever the workflow, the file contains:
 
 - a summary someone can act on without reading the rest
 - the evidence, each claim next to its source URL
-- what the run could not reach, and why — a login wall, a paywall, a dropped search
-  refinement reported in `warnings`
+- what run could not reach, and why — block, login wall, JS shell, invalid page, or dropped
+  refinement
 - rerun inputs
 
 The last two matter most. A report that hides its gaps is worse than a shorter one that
